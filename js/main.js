@@ -61,8 +61,22 @@
       num.textContent = String(i + 1).padStart(2, '0');
       name.textContent = $('h3', svcs[i]).textContent;
     };
-    const sio = new IntersectionObserver(ens => ens.forEach(en => { if (en.isIntersecting) setSvc(+en.target.dataset.i); }), { rootMargin: '-45% 0px -45% 0px' });
-    svcs.forEach(s => sio.observe(s));
+    // Le service change quand son titre arrive en haut de l'écran (ligne à 30 %)
+    let curSvc = 0;
+    const pickSvc = () => {
+      const line = (parseFloat(root.style.getPropertyValue('--vh')) * 100 || 800) * .3;
+      let i = 0;
+      svcs.forEach((s, k) => { if (s.getBoundingClientRect().top <= line) i = k; });
+      if (i !== curSvc) { curSvc = i; setSvc(i); }
+    };
+    addEventListener('scroll', pickSvc, { passive: true });
+    pickSvc();
+    // Toutes les photos de la pancarte chargées avant d'arriver dans la section
+    new IntersectionObserver(([en], obs) => {
+      if (!en.isIntersecting) return;
+      obs.disconnect();
+      figs.forEach(f => { $('img', f).loading = 'eager'; });
+    }, { rootMargin: '600px 0px' }).observe(board);
   }
 
   // Avant / après
@@ -106,18 +120,33 @@
       if (e.key === 'End') { set(100); e.preventDefault(); }
     });
     const tabs = $$('.ba-tabs .tab');
+    // Une seule taille d'image, choisie une fois, et toutes les paires préchargées à l'approche de la section
+    const size = sl.clientWidth * (devicePixelRatio || 1) > 900 ? 1600 : 800;
+    const url = (k, s) => `img/${k}-${s}-${size}.webp`;
+    const cache = {};
+    const load = u => cache[u] || (cache[u] = new Promise(res => {
+      const im = new Image(); im.onload = im.onerror = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.src = u;
+    }));
+    [aft, bef].forEach(im => { im.removeAttribute('srcset'); im.loading = 'eager'; });
+    aft.src = url(tabs[0].dataset.k, 'apres'); bef.src = url(tabs[0].dataset.k, 'avant');
+    new IntersectionObserver(([en], obs) => {
+      if (!en.isIntersecting) return;
+      obs.disconnect();
+      tabs.forEach(t => { load(url(t.dataset.k, 'apres')); load(url(t.dataset.k, 'avant')); });
+    }, { rootMargin: '900px 0px' }).observe(sl);
+    let want = 0;
     tabs.forEach((t, i) => t.addEventListener('click', () => {
       tabs.forEach(x => x.setAttribute('aria-pressed', x === t));
-      const k = t.dataset.k;
-      [[aft, 'apres', 'Après'], [bef, 'avant', 'Avant']].forEach(([im, s, l]) => {
-        im.srcset = `img/${k}-${s}-800.webp 800w, img/${k}-${s}-1600.webp 1600w`;
-        im.src = `img/${k}-${s}-800.webp`;
-        im.alt = `${l} : ${t.dataset.t}`;
+      const k = t.dataset.k, me = ++want;
+      Promise.all([load(url(k, 'apres')), load(url(k, 'avant'))]).then(() => {
+        if (me !== want) return; // un autre onglet a été choisi entre-temps
+        aft.src = url(k, 'apres'); bef.src = url(k, 'avant');
+        aft.alt = `Après : ${t.dataset.t}`; bef.alt = `Avant : ${t.dataset.t}`;
+        $('#baTitle').textContent = t.dataset.t;
+        $('#baDesc').textContent = t.dataset.d;
+        $('#baCount').textContent = String(i + 1).padStart(2, '0') + '/' + String(tabs.length).padStart(2, '0');
+        set(50);
       });
-      $('#baTitle').textContent = t.dataset.t;
-      $('#baDesc').textContent = t.dataset.d;
-      $('#baCount').textContent = String(i + 1).padStart(2, '0') + '/' + String(tabs.length).padStart(2, '0');
-      set(50);
     }));
   }
 
@@ -178,13 +207,36 @@
   // Frise du chantier
   const steps = $('#steps');
   if (steps) {
-    const items = $$('.step', steps);
-    new IntersectionObserver(([en], obs) => {
-      if (!en.isIntersecting) return;
-      obs.disconnect();
-      steps.style.setProperty('--p', 1);
-      items.forEach((s, i) => setTimeout(() => s.classList.add('on'), reduce ? 0 : 250 + i * 260));
-    }, { threshold: .35 }).observe(steps);
+    // Les étapes se cochent une par une au fil du défilement (au moins 0,5 s entre deux)
+    const items = $$('.step', steps), n = items.length;
+    const H = () => parseFloat(root.style.getPropertyValue('--vh')) * 100 || 800; // hauteur mesurée au chargement
+    let shown = 0, target = 0, timer = null;
+    const linePos = k => {
+      if (k >= n) return 1;
+      if (k <= 0) return 0;
+      const row = items[1].offsetTop === items[0].offsetTop;
+      return row ? (k - 1) / n + 0.06 : (items[k - 1].offsetTop + 32) / steps.offsetHeight;
+    };
+    const tick = () => {
+      if (shown >= target) { timer = null; return; }
+      items[shown].classList.add('on');
+      shown++;
+      steps.style.setProperty('--p', linePos(shown));
+      timer = setTimeout(tick, reduce ? 0 : 550);
+    };
+    const measure = () => {
+      const h = H(), row = items[1].offsetTop === items[0].offsetTop;
+      let t;
+      if (row) {
+        const p = (h * .85 - steps.getBoundingClientRect().top) / (h * .5);
+        t = p <= 0 ? 0 : Math.min(n, Math.ceil(p * n));
+      } else {
+        t = items.filter(s => s.getBoundingClientRect().top < h * .72).length;
+      }
+      if (t > target) { target = t; if (!timer) tick(); }
+    };
+    addEventListener('scroll', measure, { passive: true });
+    measure();
   }
 
   // Compteurs

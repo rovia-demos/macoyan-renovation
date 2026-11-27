@@ -19,7 +19,7 @@ Pages non indexées (`noindex` + `robots.txt`).
 
 Chaque élément d'exemple est aussi marqué `<!-- EXEMPLE – à remplacer -->` dans le code.
 
-- Vidéo du hero : plans de chantier libres de droits (Pexels), `video/hero-*.mp4`, `img/hero-poster-*`, `og-image.jpg`
+- Vidéo du hero : plans de chantier libres de droits (Pexels), `video/hero-1080.mp4`, `video/hero-mobile.mp4`, `img/hero-poster-*`, `og-image.jpg`
 - Photos « après » retouchées à partir de ses vraies photos : `img/terrasse-apres`, `img/facade-apres`, `img/terrasse-finie`, `img/facade-renovee`
 - Paires avant / après d'illustration : `img/cloture-*`, `img/ouverture-*`, `img/garage-*`
 - Photos d'illustration (services, galerie) : `img/cloture-neuve`, `ouverture-baie`, `garage-neuf`, `abri-jardin`

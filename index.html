@@ -18,9 +18,9 @@
 <meta property="og:url" content="https://rovia-demos.github.io/macoyan-renovation/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="img/hero-poster-960.webp" as="image" media="(max-width: 760px)">
-<link rel="preload" href="img/hero-poster-1920.webp" as="image" media="(min-width: 761px)">
-<link rel="stylesheet" href="css/style.css?v=11271047">
+<link rel="preload" href="img/hero-poster-m.webp" as="image" media="(max-width: 760px)">
+<link rel="preload" href="img/hero-poster-1920.webp" as="image" media="(min-width: 761px)" imagesrcset="img/hero-poster-960.webp 960w, img/hero-poster-1920.webp 1920w" imagesizes="100vw">
+<link rel="stylesheet" href="css/style.css?v=11271106">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "HomeAndConstructionBusiness", "name": "MACOYAN Rénovation & Maçonnerie", "description": "Maçon à Valence et Romans-sur-Isère : maçonnerie générale, dalles béton, ouvertures, murs de clôture, terrasses, garages, abris de jardin et rénovation dans toute la Drôme.", "telephone": "+33660883312", "image": "https://rovia-demos.github.io/macoyan-renovation/og-image.jpg", "url": "https://rovia-demos.github.io/macoyan-renovation/", "areaServed": [{"@type": "City", "name": "Valence"}, {"@type": "City", "name": "Romans-sur-Isère"}, {"@type": "City", "name": "Bourg-de-Péage"}, {"@type": "City", "name": "Bourg-lès-Valence"}, {"@type": "City", "name": "Chabeuil"}, {"@type": "AdministrativeArea", "name": "Drôme"}], "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "opens": "08:00", "closes": "18:30"}], "aggregateRating": {"@type": "AggregateRating", "ratingValue": "5", "reviewCount": "5", "bestRating": "5"}, "priceRange": "Devis gratuit"}</script>
 </head>
 <body>
@@ -43,8 +43,8 @@
 <main id="contenu">
 <section class="hero" id="top" aria-label="Présentation">
  <div class="hero-media">
-  <img width="1920" height="1080" src="img/hero-poster-1920.webp" srcset="img/hero-poster-960.webp 960w, img/hero-poster-1920.webp 1920w" sizes="100vw" alt="" fetchpriority="high">
-  <video id="heroVideo" muted loop playsinline preload="none" aria-hidden="true" data-src-sm="video/hero-720.mp4" data-src-lg="video/hero-1080.mp4"></video>
+  <picture><source media="(max-width: 760px)" srcset="img/hero-poster-m.webp"><img width="1920" height="1080" src="img/hero-poster-1920.webp" srcset="img/hero-poster-960.webp 960w, img/hero-poster-1920.webp 1920w" sizes="100vw" alt="" fetchpriority="high"></picture>
+  <video id="heroVideo" muted loop playsinline preload="none" aria-hidden="true" data-src-sm="video/hero-mobile.mp4" data-src-lg="video/hero-1080.mp4"></video>
  </div>
  <div class="wrap">
   <div class="hero-top">
@@ -398,6 +398,6 @@
  <button class="nx" id="lbN" aria-label="Photo suivante"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 7 9 9-9 9"/></svg></button>
 </div>
 
-<script src="js/main.js?v=11271047" defer></script>
+<script src="js/main.js?v=11271106" defer></script>
 </body>
 </html>
